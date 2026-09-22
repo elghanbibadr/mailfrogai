@@ -1,0 +1,72 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Dark-first. Near-black canvas, one electric violet-blue accent. */
+    --background: 250 12% 4.5%;
+    --foreground: 250 15% 96%;
+    --card: 250 10% 7%;
+    --card-foreground: 250 15% 96%;
+    --popover: 250 10% 8%;
+    --popover-foreground: 250 15% 96%;
+    --primary: 250 100% 68%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 250 8% 12%;
+    --secondary-foreground: 250 15% 96%;
+    --muted: 250 8% 11%;
+    --muted-foreground: 250 6% 63%;
+    --accent: 250 8% 14%;
+    --accent-foreground: 250 15% 96%;
+    --destructive: 0 72% 55%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 250 7% 15%;
+    --input: 250 7% 20%;
+    --ring: 250 100% 68%;
+    --radius: 0.625rem;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    color-scheme: dark;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "cv11", "ss01";
+  }
+
+  ::selection {
+    background: hsl(var(--primary) / 0.35);
+  }
+
+  h1,
+  h2,
+  h3 {
+    @apply tracking-tight;
+  }
+
+  details > summary {
+    list-style: none;
+  }
+  details > summary::-webkit-details-marker {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
