@@ -5,6 +5,7 @@ import {
   type GeneratedEmail,
   type GeneratorInput,
 } from "@/lib/validations/generator";
+import OpenAI from "openai";
 
 function parseModelJson(raw: string): unknown {
   const cleaned = raw
@@ -24,20 +25,24 @@ export async function generateEmail(params: {
   templateInstructions?: string;
   model: string;
 }): Promise<GeneratedEmail> {
-  const openai = getOpenAI();
+const openai = new OpenAI({
+  apiKey: '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',
+  baseURL: 'https://integrate.api.nvidia.com/v1',
+})
+
   let lastError: unknown;
 
   for (let attempt = 0; attempt < 2; attempt++) {
     const completion = await openai.chat.completions.create({
-      model: params.model,
-      temperature: 0.8,
-      max_completion_tokens: 700,
-      response_format: { type: "json_object" },
-      messages: [
-        { role: "system", content: SYSTEM_PROMPT },
-        { role: "user", content: buildUserPrompt(params.input, params.templateInstructions) },
-      ],
-    });
+    model: "z-ai/glm-5.3-flash",
+    messages: [{"role":"system","content":"You are a helpful assistant."},{"role":"user","content":"Which number is larger, 9.11 or 9.8?"}],
+    temperature: 0.5,
+    top_p: 1,
+    max_tokens: 1024,
+    stream: false,
+  })
+   
+  // process.stdout.write(completion.choices[0]?.message?.content);
 
     const content = completion.choices[0]?.message?.content;
     if (!content) {
