@@ -33,15 +33,18 @@ const openai = new OpenAI({
   let lastError: unknown;
 
   for (let attempt = 0; attempt < 2; attempt++) {
-    const completion = await openai.chat.completions.create({
-    model: "z-ai/glm-5.3-flash",
-    messages: [{"role":"system","content":"You are a helpful assistant."},{"role":"user","content":"Which number is larger, 9.11 or 9.8?"}],
-    temperature: 0.5,
-    top_p: 1,
-    max_tokens: 1024,
-    stream: false,
-  })
-   
+   const completion = await openai.chat.completions.create({
+  model: params.model,
+  temperature: 0.8,
+  max_tokens: 700,                 // was max_completion_tokens
+  // response_format: { type: "json_object" },  // drop this — many
+  // OpenAI-compatible providers don't support it; the system prompt
+  // already instructs strict JSON, and you're validating with Zod anyway
+  messages: [
+    { role: "system", content: SYSTEM_PROMPT },
+    { role: "user", content: buildUserPrompt(params.input, params.templateInstructions) },
+  ],
+});
   // process.stdout.write(completion.choices[0]?.message?.content);
 
     const content = completion.choices[0]?.message?.content;
