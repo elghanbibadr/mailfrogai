@@ -40,11 +40,11 @@ export default async function GeneratePage({
     "We help dental clinics improve their websites, online presence, and patient conversion rates with fast, modern websites and AI-powered lead generation.",
 
   // Prospect information
-  firstName: "Michael",
-  lastName: "Anderson",
-  jobTitle: "Practice Owner",
-  company: "BrightSmile Dental",
-  website: "https://brightsmile-dental.com",
+  firstName: "Sarah",
+  lastName: "Mitchell",
+  jobTitle: "VP of Marketing",
+  company: "Northwind Digital",
+  website: "northwinddigital.com",
 
   // Optional fields depending on your GeneratorInput schema
   leadId: "",

@@ -8,7 +8,7 @@ import { FREE_LIMITS } from "@/lib/constants";
 import type { EmailGeneration } from "@/types";
 
 export const runtime = "nodejs";
-export const maxDuration = 30;
+export const maxDuration = 60;
 
 const RATE_MAX_PER_MINUTE = 6;
 
@@ -83,9 +83,10 @@ export async function POST(req: Request) {
   }
 
   const release = () => admin.rpc("release_generation", { p_user_id: user.id });
-  const model = isPro
-    ? (process.env.OPENAI_PRO_MODEL ?? "gpt-4o")
-    : (process.env.OPENAI_MODEL ?? "gpt-4o-mini");
+  const model =(process.env.OPENAI_PRO_MODEL ?? "gpt-4o")
+  //  isPro
+    // ? (process.env.OPENAI_PRO_MODEL ?? "gpt-4o")
+    // : (process.env.OPENAI_MODEL ?? "gpt-4o-mini");
 
   let generated;
   try {

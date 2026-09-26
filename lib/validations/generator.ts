@@ -31,24 +31,23 @@ export const generatorSchema = z.object({
 export type GeneratorInput = z.infer<typeof generatorSchema>;
 
 export const emptyGenerator: GeneratorInput = {
-  firstName: "",
-  lastName: "",
-  jobTitle: "",
-  company: "",
-  website: "",
-  yourName: "",
-  yourCompany: "",
-  offer: "",
-  targetCustomer: "",
+  firstName: "Sarah",
+  lastName: "Mitchell",
+  jobTitle: "VP of Marketing",
+  company: "Northwind Digital",
+  website: "northwinddigital.com",
+  yourName: "Alex Rivera",
+  yourCompany: "Rivera Web Studio",
+  offer: "Fast, modern websites and AI-powered lead generation for dental clinics.",
+  targetCustomer: "Dental clinics with outdated websites",
   goal: "Book a meeting",
-  valueProp: "",
-  tone: "Professional",
-  cta: "",
-  context: "",
+  valueProp: "We turn slow websites into ones that convert visitors into booked patients.",
+  tone: "Friendly",
+  cta: "A 15-minute call this week",
+  context: "They just launched a new booking page and are running paid ads.",
   templateId: "",
   leadId: "",
 };
-
 /** Shape the model must return. */
 export const generatedEmailSchema = z.object({
   subject: z.string().trim().min(1).max(150),

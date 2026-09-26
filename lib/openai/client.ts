@@ -9,7 +9,7 @@ export function getOpenAI() {
   client ??= new OpenAI({
     apiKey,
     baseURL: process.env.OPENAI_BASE_URL || undefined, // e.g. https://integrate.api.nvidia.com/v1
-    timeout: 25_000,
+    timeout: 30_000,
     maxRetries: 1,
   });
   return client;
