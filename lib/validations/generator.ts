@@ -30,24 +30,53 @@ export const generatorSchema = z.object({
 
 export type GeneratorInput = z.infer<typeof generatorSchema>;
 
-export const emptyGenerator: GeneratorInput = {
-  firstName: "Sarah",
-  lastName: "Mitchell",
-  jobTitle: "VP of Marketing",
-  company: "Northwind Digital",
-  website: "northwinddigital.com",
-  yourName: "Alex Rivera",
-  yourCompany: "Rivera Web Studio",
-  offer: "Fast, modern websites and AI-powered lead generation for dental clinics.",
-  targetCustomer: "Dental clinics with outdated websites",
-  goal: "Book a meeting",
-  valueProp: "We turn slow websites into ones that convert visitors into booked patients.",
-  tone: "Friendly",
-  cta: "A 15-minute call this week",
-  context: "They just launched a new booking page and are running paid ads.",
-  templateId: "",
-  leadId: "",
-};
+const isDev = process.env.NODE_ENV !== "production";
+
+/**
+ * Dev-only convenience defaults so you don't have to refill the form on every
+ * test run. In production this always resolves to the empty version below —
+ * do not remove this check.
+ */
+export const emptyGenerator: GeneratorInput = isDev
+  ? {
+      firstName: "James",
+      lastName: "Okafor",
+      jobTitle: "Engineering Manager",
+      company: "Brightloop",
+      website: "brightloop.io",
+      yourName: "Your Name",
+      yourCompany: "",
+      offer:
+        "Frontend developer experienced in React, TypeScript, and building accessible, component-based UI. Recently shipped a full-stack SaaS product end to end — auth, Stripe billing, and AI integration.",
+      targetCustomer: "Remote-first teams hiring frontend or full-stack developers",
+      goal: "Get a reply",
+      valueProp:
+        "I build fast, accessible UIs and have hands-on experience with modern React/Next.js and full-stack product delivery.",
+      tone: "Direct",
+      cta: "Happy to share my portfolio, or open to a quick 15-minute call",
+      context:
+        "Saw their engineering blog post about migrating to a component-driven design system, and their careers page lists an open Senior Frontend Engineer role, fully remote.",
+      templateId: "",
+      leadId: "",
+    }
+  : {
+      firstName: "",
+      lastName: "",
+      jobTitle: "",
+      company: "",
+      website: "",
+      yourName: "",
+      yourCompany: "",
+      offer: "",
+      targetCustomer: "",
+      goal: "Book a meeting",
+      valueProp: "",
+      tone: "Professional",
+      cta: "",
+      context: "",
+      templateId: "",
+      leadId: "",
+    };
 /** Shape the model must return. */
 export const generatedEmailSchema = z.object({
   subject: z.string().trim().min(1).max(150),

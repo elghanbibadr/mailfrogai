@@ -24,32 +24,12 @@ export default async function GeneratePage({
   const p = profile as Profile | null;
   const templateList = (templates ?? []) as Template[];
 
-  // let defaults: GeneratorInput = {
-  //   ...emptyGenerator,
-  //   yourName: p?.full_name ?? "",
-  //   yourCompany: p?.company_name ?? "",
-  //   offer: p?.company_description ?? "",
-  // };
   let defaults: GeneratorInput = {
-  ...emptyGenerator,
-
-  // Your information
-  yourName: "Badr Ghanbi",
-  yourCompany: "BG Digital",
-  offer:
-    "We help dental clinics improve their websites, online presence, and patient conversion rates with fast, modern websites and AI-powered lead generation.",
-
-  // Prospect information
-  firstName: "Sarah",
-  lastName: "Mitchell",
-  jobTitle: "VP of Marketing",
-  company: "Northwind Digital",
-  website: "northwinddigital.com",
-
-  // Optional fields depending on your GeneratorInput schema
-  leadId: "",
-  templateId: "",
-};
+    ...emptyGenerator,
+    yourName: p?.full_name ?? "",
+    yourCompany: p?.company_name ?? "",
+    offer: p?.company_description ?? "",
+  };
 
   // Reuse the inputs of a previous email.
   if (sp.from && uuidSchema.safeParse(sp.from).success) {
