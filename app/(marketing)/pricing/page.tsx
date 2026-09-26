@@ -7,7 +7,6 @@ import { FREE_LIMITS, PRO_PRICE_USD } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Pricing" };
-
 const PLANS = [
   {
     name: "Free",
@@ -20,6 +19,7 @@ const PLANS = [
       `${FREE_LIMITS.templates} custom templates`,
     ],
     cta: { label: "Get started", href: "/signup" },
+    highlighted: false,
   },
   {
     name: "Pro",
