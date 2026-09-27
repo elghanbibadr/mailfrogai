@@ -85,7 +85,7 @@ export function OnboardingFlow({ defaults }: { defaults: ProfileInput }) {
             <div>
               <h1 className="text-xl font-semibold">Tell us about your business</h1>
               <p className="mt-1.5 text-sm text-muted-foreground">
-                This pre-fills the generator so you don't retype it every time.
+                This pre-fills the generator so you don&apos;t retype it every time.
               </p>
             </div>
             <div className="grid gap-4 sm:grid-cols-2">

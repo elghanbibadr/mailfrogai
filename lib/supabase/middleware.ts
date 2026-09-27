@@ -40,8 +40,19 @@ export async function updateSession(request: NextRequest) {
     return res;
   };
 
-  if (!user && pathname.startsWith("/dashboard")) return redirect("/login");
+  const protectedRoute = pathname.startsWith("/dashboard") || pathname.startsWith("/onboarding");
+  if (!user && protectedRoute) return redirect("/login");
   if (user && (pathname === "/login" || pathname === "/signup")) return redirect("/dashboard");
+
+  // Route signed-in users into onboarding until they've completed it, and away
+  // from it once they have — one extra query, only on the routes that need it.
+  if (user && protectedRoute) {
+    const { data: profile } = await supabase.from("profiles").select("onboarded").eq("id", user.id).maybeSingle();
+    const onboarded = profile?.onboarded ?? true; // fail open: don't lock a user out over a transient read error
+
+    if (!onboarded && pathname.startsWith("/dashboard")) return redirect("/onboarding");
+    if (onboarded && pathname.startsWith("/onboarding")) return redirect("/dashboard");
+  }
 
   return response;
 }
