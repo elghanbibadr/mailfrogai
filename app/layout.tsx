@@ -1,9 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Geist } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
-import { Analytics } from "@vercel/analytics/next"
-
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -22,6 +21,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="min-h-screen font-sans">
         {children}
         <Toaster />
+        <Analytics />
       </body>
     </html>
   );

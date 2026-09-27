@@ -73,7 +73,7 @@ export function AuthForm({ mode, notice }: { mode: "login" | "signup"; notice?: 
 
   if (confirmEmail) {
     return (
-      <div className="text-center">
+      <div className="text-center mt-10">
         <div className="mx-auto mb-4 flex size-11 items-center justify-center rounded-full bg-primary/15 text-primary">
           <MailCheck className="size-5" aria-hidden />
         </div>
