@@ -45,21 +45,29 @@ function TemplateDialog({
     formState: { errors },
   } = useForm<TemplateInput>({
     resolver: zodResolver(templateSchema),
-    defaultValues: { name: "", description: "", instructions: "" },
+    defaultValues: { name: "", description: "", instructions: "", offer: "", valueProposition: "" },
   });
 
   useEffect(() => {
     if (open) {
       reset(
         template
-          ? { name: template.name, description: template.description, instructions: template.instructions }
-          : { name: "", description: "", instructions: "" },
+          ? {
+              name: template.name,
+              description: template.description,
+              instructions: template.instructions,
+              offer: template.offer,
+              valueProposition: template.valueProposition,
+            }
+          : { name: "", description: "", instructions: "", offer: "", valueProposition: "" },
       );
     }
   }, [open, template, reset]);
 
   const submit = (values: TemplateInput) =>
+    
     startTransition(async () => {
+      console.log("submited")
       const res = await saveTemplate(values, template?.id);
       if (!res.ok) {
         if (res.code === "LIMIT_REACHED") {
@@ -98,12 +106,36 @@ function TemplateDialog({
             >
               <Textarea id="tpl-inst" className="min-h-[140px]" aria-invalid={!!errors.instructions} {...register("instructions")} />
             </Field>
+            <div className="space-y-4 rounded-lg border bg-muted/30 p-4">
+              <p className="text-sm font-medium">Reused automatically every time you use this template</p>
+              <Field
+                label="What you offer"
+                htmlFor="tpl-offer"
+                error={errors.offer?.message}
+                hint="What you're selling or who you are, in a sentence or two."
+              >
+                <Textarea id="tpl-offer" className="min-h-[90px]" aria-invalid={!!errors.offer} {...register("offer")} />
+              </Field>
+              <Field
+                label="Key value proposition"
+                htmlFor="tpl-value-prop"
+                error={errors.valueProposition?.message}
+                hint="The single strongest benefit to lead with."
+              >
+                <Textarea
+                  id="tpl-value-prop"
+                  className="min-h-[70px]"
+                  aria-invalid={!!errors.valueProposition}
+                  {...register("valueProposition")}
+                />
+              </Field>
+            </div>
           </div>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={pending}>
               Cancel
             </Button>
-            <Button type="submit" loading={pending}>
+            <Button type="submit" loading={pending} onClick={()=>console.log("clicked")}>
               {template ? "Save changes" : "Create template"}
             </Button>
           </DialogFooter>

@@ -28,7 +28,7 @@ export default async function GeneratePage({
     ...emptyGenerator,
     yourName: p?.full_name ?? "",
     yourCompany: p?.company_name ?? "",
-    offer: p?.company_description ?? "",
+    offer: "",
   };
 
   // Reuse the inputs of a previous email.

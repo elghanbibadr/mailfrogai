@@ -49,7 +49,9 @@ export type Template = {
   user_id: string | null;
   name: string;
   description: string;
+  offer: string
   instructions: string;
+  valueProposition: string
   created_at: string;
 };
 

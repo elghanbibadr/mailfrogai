@@ -39,26 +39,31 @@ const isDev = process.env.NODE_ENV !== "production";
  */
 export const emptyGenerator: GeneratorInput = isDev
   ? {
-      firstName: "James",
-      lastName: "Okafor",
-      jobTitle: "Engineering Manager",
-      company: "Brightloop",
-      website: "brightloop.io",
-      yourName: "Your Name",
-      yourCompany: "",
+      firstName: "Thomas",
+      lastName: "Martin",
+      jobTitle: "Founder & CEO",
+      company: "Studio Nova",
+      website: "https://studionova.example",
+      yourName: "Badr Ghanbi",
+      yourCompany: "Badr Ghanbi",
       offer:
-        "Frontend developer experienced in React, TypeScript, and building accessible, component-based UI. Recently shipped a full-stack SaaS product end to end — auth, Stripe billing, and AI integration.",
-      targetCustomer: "Remote-first teams hiring frontend or full-stack developers",
-      goal: "Get a reply",
+        "Développeur full-stack spécialisé en React, Next.js et TypeScript. Je peux intervenir en freelance à distance pour renforcer votre équipe sur des projets web, SaaS et applications sur mesure.",
+      targetCustomer:
+        "Agences web et digitales qui recherchent des développeurs freelance à distance",
+      goal: "Savoir si l'agence recherche actuellement un développeur full-stack",
       valueProp:
-        "I build fast, accessible UIs and have hands-on experience with modern React/Next.js and full-stack product delivery.",
+        "Je peux renforcer rapidement votre équipe et prendre en charge des tâches frontend ou full-stack sur vos projets clients, notamment avec React, Next.js, TypeScript et Node.js.",
       tone: "Direct",
-      cta: "Happy to share my portfolio, or open to a quick 15-minute call",
+      cta:
+        "Seriez-vous ouvert à un échange rapide si vous recherchez actuellement un développeur full-stack freelance ?",
       context:
-        "Saw their engineering blog post about migrating to a component-driven design system, and their careers page lists an open Senior Frontend Engineer role, fully remote.",
+        "J'ai découvert Studio Nova en consultant votre site et vos projets. Votre agence accompagne ses clients sur des projets web et digitaux, et je souhaitais savoir si vous faites actuellement appel à des développeurs freelance pour renforcer votre équipe.",
       templateId: "",
       leadId: "",
     }
+
+
+
   : {
       firstName: "",
       lastName: "",
