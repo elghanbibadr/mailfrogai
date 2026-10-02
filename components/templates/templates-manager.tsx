@@ -48,6 +48,7 @@ function TemplateDialog({
     defaultValues: { name: "", description: "", instructions: "", offer: "", valueProposition: "" },
   });
 
+
   useEffect(() => {
     if (open) {
       reset(
@@ -84,7 +85,9 @@ function TemplateDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
-        <form onSubmit={handleSubmit(submit)} noValidate>
+      <form onSubmit={handleSubmit(submit, (validationErrors) => {
+  console.log("Form validation failed:", validationErrors);
+})} noValidate>
           <DialogHeader>
             <DialogTitle>{template ? "Edit template" : "New template"}</DialogTitle>
             <DialogDescription>

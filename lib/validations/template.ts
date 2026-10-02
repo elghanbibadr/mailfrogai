@@ -1,13 +1,3 @@
-// lib/validations/template.ts
-//
-// Schéma complet du template — j'avais initialement omis "description"
-// et "prompt" en me concentrant sur l'ajout de offer/valueProposition.
-// Les voici réintégrés :
-//   - description : repère humain affiché dans le sélecteur de templates
-//     (jamais envoyé au modèle)
-//   - prompt       : instructions explicites données à l'IA (longueur,
-//     ton, règles à suivre), complémentaires à "structure"
-
 import { z } from "zod";
 
 export const templateSchema = z.object({
@@ -19,15 +9,10 @@ export const templateSchema = z.object({
   description: z
     .string()
     .max(200, "200 caractères maximum")
-    .optional(),
+    .optional()
+    .default(""),
 
-  tone: z.enum(["professionnel", "decontracte", "direct", "chaleureux"]),
-
-  structure: z
-    .string()
-    .min(1, "Décris la structure de l'email (accroche, corps, CTA...)"),
-
-  prompt: z
+  instructions: z
     .string()
     .min(1, "Donne les instructions à suivre par l'IA")
     .max(1000, "1000 caractères maximum"),
@@ -43,31 +28,25 @@ export const templateSchema = z.object({
     .max(300, "300 caractères maximum"),
 });
 
-export type TemplateFormValues = z.infer<typeof templateSchema>;
+export type TemplateInput = z.infer<typeof templateSchema>;
 
-// Les mêmes valeurs, telles que stockées/lues côté Supabase
-// (snake_case en base, camelCase côté app).
 export interface TemplateRecord {
   id: string;
   user_id: string;
   name: string;
   description: string | null;
-  tone: TemplateFormValues["tone"];
-  structure: string;
-  prompt: string;
+  instructions: string;
   offer: string;
   value_proposition: string;
   created_at: string;
   updated_at: string;
 }
 
-export function templateRecordToFormValues(record: TemplateRecord): TemplateFormValues {
+export function templateRecordToFormValues(record: TemplateRecord): TemplateInput {
   return {
     name: record.name,
     description: record.description ?? "",
-    tone: record.tone,
-    structure: record.structure,
-    prompt: record.prompt,
+    instructions: record.instructions,
     offer: record.offer,
     valueProposition: record.value_proposition,
   };
