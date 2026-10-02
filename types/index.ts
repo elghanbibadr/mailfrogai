@@ -51,7 +51,7 @@ export type Template = {
   description: string;
   offer: string
   instructions: string;
-  valueProposition: string
+  value_proposition: string
   created_at: string;
 };
 

@@ -43,6 +43,7 @@ export function GeneratorForm({
   const [loading, setLoading] = useState(false);
   const [upgradeReason, setUpgradeReason] = useState<string | null>(null);
 
+  console.log("templates2",templates)
   const {
     register,
     handleSubmit,

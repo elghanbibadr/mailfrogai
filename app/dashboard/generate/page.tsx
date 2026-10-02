@@ -24,6 +24,7 @@ export default async function GeneratePage({
   const p = profile as Profile | null;
   const templateList = (templates ?? []) as Template[];
 
+
   let defaults: GeneratorInput = {
     ...emptyGenerator,
     yourName: p?.full_name ?? "",
@@ -55,10 +56,21 @@ export default async function GeneratePage({
     }
   }
 
-  if (sp.template && templateList.some((t) => t.id === sp.template)) {
-    defaults = { ...defaults, templateId: sp.template };
-  }
+// Inside GeneratePage in page.tsx
 
+if (sp.template) {
+  const selectedTemplate = templateList.find((t) => t.id === sp.template);
+  if (selectedTemplate) {
+    console.log("selectedTemplate",selectedTemplate)
+    defaults = {
+      ...defaults,
+      templateId: selectedTemplate.id,
+      offer: selectedTemplate.offer ?? defaults.offer,
+      valueProp: selectedTemplate.value_proposition ?? selectedTemplate.value_proposition ?? defaults.valueProp,
+      // instructions: selectedTemplate.instructions ?? defaults.instructions,
+    };
+  }
+}
   return (
     <>
       <PageHeader

@@ -7,17 +7,28 @@ export const websiteField = z
   .string()
   .trim()
   .max(200, "Keep this under 200 characters")
-  .refine((v) => v === "" || websiteRegex.test(v), "Enter a valid website, like acme.com");
+  .refine(
+    (v) => v === "" || websiteRegex.test(v),
+    "Enter a valid website, like acme.com",
+  );
 
 export const generatorSchema = z.object({
-  firstName: z.string().trim().min(1, "Enter the prospect's first name").max(80),
+  firstName: z
+    .string()
+    .trim()
+    .min(1, "Enter the prospect's first name")
+    .max(80),
   lastName: z.string().trim().max(80),
   jobTitle: z.string().trim().max(120),
   company: z.string().trim().min(1, "Enter the prospect's company").max(120),
   website: websiteField,
   yourName: z.string().trim().min(1, "Enter your name").max(80),
   yourCompany: z.string().trim().max(120),
-  offer: z.string().trim().min(10, "Describe what you offer in a sentence or two").max(1000),
+  offer: z
+    .string()
+    .trim()
+    .min(10, "Describe what you offer in a sentence or two")
+    .max(1000),
   targetCustomer: z.string().trim().max(300),
   goal: z.enum(GOALS),
   valueProp: z.string().trim().min(5, "Add the key value you deliver").max(500),
@@ -39,31 +50,23 @@ const isDev = process.env.NODE_ENV !== "production";
  */
 export const emptyGenerator: GeneratorInput = isDev
   ? {
-      firstName: "Thomas",
-      lastName: "Martin",
-      jobTitle: "Founder & CEO",
-      company: "Studio Nova",
-      website: "https://studionova.example",
-      yourName: "Badr Ghanbi",
-      yourCompany: "Badr Ghanbi",
-      offer:
-        "Développeur full-stack spécialisé en React, Next.js et TypeScript. Je peux intervenir en freelance à distance pour renforcer votre équipe sur des projets web, SaaS et applications sur mesure.",
-      targetCustomer:
-        "Agences web et digitales qui recherchent des développeurs freelance à distance",
-      goal: "Savoir si l'agence recherche actuellement un développeur full-stack",
-      valueProp:
-        "Je peux renforcer rapidement votre équipe et prendre en charge des tâches frontend ou full-stack sur vos projets clients, notamment avec React, Next.js, TypeScript et Node.js.",
+      firstName: "",
+      lastName: "",
+      jobTitle: "",
+      company: "",
+      website: "",
+      yourName: "",
+      yourCompany: "",
+      offer: "",
+      targetCustomer: "",
+      goal: "",
+      valueProp: "",
       tone: "Direct",
-      cta:
-        "Seriez-vous ouvert à un échange rapide si vous recherchez actuellement un développeur full-stack freelance ?",
-      context:
-        "J'ai découvert Studio Nova en consultant votre site et vos projets. Votre agence accompagne ses clients sur des projets web et digitaux, et je souhaitais savoir si vous faites actuellement appel à des développeurs freelance pour renforcer votre équipe.",
+      cta: "",
+      context: "",
       templateId: "",
       leadId: "",
     }
-
-
-
   : {
       firstName: "",
       lastName: "",
