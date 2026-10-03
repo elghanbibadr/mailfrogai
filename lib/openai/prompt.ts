@@ -24,8 +24,8 @@ const line = (label: string, value?: string) =>
 // Minimal shape needed from a template here — avoids importing the full
 // Template type and keeps this file decoupled from where the template
 // was fetched (server action, cached list, etc.).
-type TemplateContext = {
-  instructions?: string;
+export type TemplateContext = {
+  instructions: string;
   offer?: string;
   valueProposition?: string;
 };

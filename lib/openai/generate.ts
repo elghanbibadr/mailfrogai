@@ -1,5 +1,5 @@
 import { getOpenAI } from "@/lib/openai/client";
-import { buildUserPrompt, SYSTEM_PROMPT } from "@/lib/openai/prompt";
+import { buildUserPrompt, SYSTEM_PROMPT, type TemplateContext } from "@/lib/openai/prompt";
 import {
   generatedEmailSchema,
   type GeneratedEmail,
@@ -17,7 +17,10 @@ function parseModelJson(raw: string): unknown {
 
 export async function generateEmail(params: {
   input: GeneratorInput;
-  templateInstructions?: string;
+  // Was `templateInstructions?: string` — now takes the whole template so
+  // buildUserPrompt can also pull offer / valueProposition automatically,
+  // not just the instructions text.
+  template?: TemplateContext | null;
   model: string;
 }): Promise<GeneratedEmail> {
   const openai = getOpenAI();
@@ -32,7 +35,7 @@ export async function generateEmail(params: {
         response_format: { type: "json_object" },
         messages: [
           { role: "system", content: SYSTEM_PROMPT },
-          { role: "user", content: buildUserPrompt(params.input, params.templateInstructions) },
+          { role: "user", content: buildUserPrompt(params.input, params.template) },
         ],
       });
 

@@ -19,7 +19,7 @@ function toDbRow(input: ReturnType<typeof templateSchema.parse>) {
 
 function fromDbRow(row: Record<string, unknown>): Template {
   const { value_proposition, ...rest } = row;
-  return { ...rest, valueProposition: value_proposition } as Template;
+  return { ...rest, value_proposition: value_proposition } as Template;
 }
 
 export async function saveTemplate(input: unknown, id?: string): Promise<ActionResult<Template>> {

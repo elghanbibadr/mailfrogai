@@ -58,7 +58,7 @@ function TemplateDialog({
               description: template.description,
               instructions: template.instructions,
               offer: template.offer,
-              valueProposition: template.valueProposition,
+              valueProposition: template.value_proposition,
             }
           : { name: "", description: "", instructions: "", offer: "", valueProposition: "" },
       );
