@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import * as Sentry from "@sentry/nextjs";
 import { getAuthed } from "@/lib/auth";
 import { templateSchema } from "@/lib/validations/template";
 import { uuidSchema } from "@/lib/validations/email";
@@ -41,7 +42,12 @@ export async function saveTemplate(input: unknown, id?: string): Promise<ActionR
         .select()
         .single();
 
-  if (error) return fromDbError(error);
+  
+  if (error) {
+    Sentry.captureException(error, { tags: { action: "saveTemplate" }, extra: { userId: user.id, isUpdate: !!id } });
+    return fromDbError(error);
+  }
+
   revalidatePath("/dashboard", "layout");
   return ok(fromDbRow(data));
 }
@@ -52,7 +58,10 @@ export async function deleteTemplate(id: string): Promise<ActionResult> {
   if (!ctx) return unauthorized();
 
   const { error } = await ctx.supabase.from("templates").delete().eq("id", id);
-  if (error) return fromDbError(error);
+  if (error) {
+    Sentry.captureException(error, { tags: { action: "deleteTemplate" }, extra: { templateId: id } });
+    return fromDbError(error);
+  }
   revalidatePath("/dashboard", "layout");
   return ok(null);
 }
