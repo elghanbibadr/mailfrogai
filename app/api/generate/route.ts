@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { generateEmail } from "@/lib/openai/generate";
+import type { TemplateContext } from "@/lib/openai/prompt";
 import { generatorSchema } from "@/lib/validations/generator";
 import { getSubscription, isProStatus } from "@/lib/usage";
 import { FREE_LIMITS } from "@/lib/constants";
@@ -37,15 +38,22 @@ export async function POST(req: Request) {
   const input = parsed.data;
 
   // Templates and leads are read with the user's own client, so RLS proves ownership.
-  let templateInstructions: string | undefined;
+  let template: TemplateContext | undefined;
   if (input.templateId) {
     const { data } = await supabase
       .from("templates")
-      .select("instructions")
+      .select("instructions, offer, value_proposition")
       .eq("id", input.templateId)
       .maybeSingle();
     if (!data) return json({ code: "INVALID", error: "That template no longer exists." }, 400);
-    templateInstructions = data.instructions as string;
+
+    // DB columns are snake_case (value_proposition); TemplateContext uses
+    // camelCase (valueProposition) to match the rest of the app's convention.
+    template = {
+      instructions: data.instructions as string,
+      offer: (data.offer as string | null) ?? undefined,
+      valueProposition: (data.value_proposition as string | null) ?? undefined,
+    };
   }
   if (input.leadId) {
     const { data } = await supabase.from("leads").select("id").eq("id", input.leadId).maybeSingle();
@@ -83,14 +91,14 @@ export async function POST(req: Request) {
   }
 
   const release = () => admin.rpc("release_generation", { p_user_id: user.id });
-  const model =(process.env.OPENAI_PRO_MODEL ?? "gpt-4o")
+  const model = process.env.OPENAI_PRO_MODEL ?? "gpt-4o";
   //  isPro
-    // ? (process.env.OPENAI_PRO_MODEL ?? "gpt-4o")
-    // : (process.env.OPENAI_MODEL ?? "gpt-4o-mini");
+  // ? (process.env.OPENAI_PRO_MODEL ?? "gpt-4o")
+  // : (process.env.OPENAI_MODEL ?? "gpt-4o-mini");
 
   let generated;
   try {
-    generated = await generateEmail({ input, templateInstructions, model });
+    generated = await generateEmail({ input, template, model });
   } catch (error) {
     console.error("Email generation failed:", error);
     await release();
