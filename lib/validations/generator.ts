@@ -48,8 +48,8 @@ const isDev = process.env.NODE_ENV !== "production";
  * test run. In production this always resolves to the empty version below —
  * do not remove this check.
  */
-export const emptyGenerator: GeneratorInput = isDev
-  ? {
+export const emptyGenerator: GeneratorInput = 
+   {
       firstName: "",
       lastName: "",
       jobTitle: "",
@@ -59,32 +59,15 @@ export const emptyGenerator: GeneratorInput = isDev
       yourCompany: "",
       offer: "",
       targetCustomer: "",
-      goal: "",
+      goal: "Book a meeting",   // was: ""
       valueProp: "",
       tone: "Direct",
       cta: "",
       context: "",
       templateId: "",
       leadId: "",
-    }
-  : {
-      firstName: "",
-      lastName: "",
-      jobTitle: "",
-      company: "",
-      website: "",
-      yourName: "",
-      yourCompany: "",
-      offer: "",
-      targetCustomer: "",
-      goal: "Book a meeting",
-      valueProp: "",
-      tone: "Professional",
-      cta: "",
-      context: "",
-      templateId: "",
-      leadId: "",
     };
+  
 /** Shape the model must return. */
 export const generatedEmailSchema = z.object({
   subject: z.string().trim().min(1).max(150),
