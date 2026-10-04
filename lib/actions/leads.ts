@@ -25,7 +25,17 @@ export async function saveLead(input: unknown, id?: string): Promise<ActionResul
         .select()
         .single();
 
-  if (error) return fromDbError(error);
+  if (error) {
+    // .single() returns PGRST116 when no row matched (deleted, or RLS hid it).
+    // That's an expected outcome, not a bug, so keep it out of Sentry.
+    if (id && error.code === "PGRST116") return fail("Lead not found.", "INVALID");
+
+    return fromDbError(error, {
+      action: id ? "updateLead" : "createLead",
+      extra: { userId: user.id, leadId: id },
+    });
+  }
+
   revalidatePath("/dashboard", "layout");
   return ok(data as Lead);
 }
@@ -36,7 +46,13 @@ export async function deleteLead(id: string): Promise<ActionResult> {
   if (!ctx) return unauthorized();
 
   const { error } = await ctx.supabase.from("leads").delete().eq("id", id);
-  if (error) return fromDbError(error);
+  if (error) {
+    return fromDbError(error, {
+      action: "deleteLead",
+      extra: { userId: ctx.user.id, leadId: id },
+    });
+  }
+
   revalidatePath("/dashboard", "layout");
   return ok(null);
 }

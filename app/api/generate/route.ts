@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import * as Sentry from "@sentry/nextjs";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { generateEmail } from "@/lib/openai/generate";
 import type { TemplateContext } from "@/lib/openai/prompt";
@@ -8,6 +7,7 @@ import { generatorSchema } from "@/lib/validations/generator";
 import { getSubscription, isProStatus } from "@/lib/usage";
 import { FREE_LIMITS } from "@/lib/constants";
 import type { EmailGeneration } from "@/types";
+import * as Sentry from "@sentry/nextjs"
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -143,11 +143,6 @@ export async function POST(req: Request) {
 
   if (insertError || !row) {
     console.error("Saving generation failed:", insertError);
-Sentry.captureException(insertError ?? new Error("Insert returned no row"), {
-      level: "error",
-      tags: { route: "generate", step: "save_generation" },
-      extra: { userId: user.id },
-    });
 
     await release();
     return json({ code: "FAILED", error: "The email was generated but couldn't be saved. Try again." }, 500);

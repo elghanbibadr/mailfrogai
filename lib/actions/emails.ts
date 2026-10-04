@@ -5,6 +5,7 @@ import { getAuthed } from "@/lib/auth";
 import { emailEditSchema, emailStatusSchema, uuidSchema } from "@/lib/validations/email";
 import { fail, fromDbError, invalid, ok, unauthorized, type ActionResult } from "./types";
 import type { EmailGeneration } from "@/types";
+import { reportError } from "../validations/monitoring";
 
 /** Saves edits to a generated email and moves it from draft to saved. */
 export async function saveEmail(id: string, input: unknown): Promise<ActionResult<EmailGeneration>> {
@@ -14,7 +15,7 @@ export async function saveEmail(id: string, input: unknown): Promise<ActionResul
 
   const ctx = await getAuthed();
   if (!ctx) return unauthorized();
-  const { supabase } = ctx;
+  const { supabase, user } = ctx;
 
   const { data, error } = await supabase
     .from("email_generations")
@@ -22,17 +23,35 @@ export async function saveEmail(id: string, input: unknown): Promise<ActionResul
     .eq("id", id)
     .select()
     .single();
-  if (error) return fromDbError(error);
+
+  if (error) {
+    // No row matched (deleted in another tab, or hidden by RLS): expected, not a bug.
+    if (error.code === "PGRST116") return fail("Email not found.", "INVALID");
+
+    return fromDbError(error, {
+      action: "saveEmail",
+      extra: { userId: user.id, emailId: id },
+    });
+  }
 
   let row = data as EmailGeneration;
   if (row.status === "draft") {
-    const { data: promoted } = await supabase
+    const { data: promoted, error: promoteError } = await supabase
       .from("email_generations")
       .update({ status: "saved" })
       .eq("id", id)
       .select()
       .single();
-    if (promoted) row = promoted as EmailGeneration;
+
+    if (promoteError) {
+      // The edits were saved, so don't fail the whole action. Just report it.
+      reportError(promoteError, {
+        tags: { source: "saveEmail", action: "promoteDraft" },
+        extra: { userId: user.id, emailId: id },
+      });
+    } else if (promoted) {
+      row = promoted as EmailGeneration;
+    }
   }
 
   revalidatePath("/dashboard", "layout");
@@ -56,7 +75,15 @@ export async function updateEmailStatus(
     .eq("id", id)
     .select()
     .single();
-  if (error) return fromDbError(error);
+
+  if (error) {
+    if (error.code === "PGRST116") return fail("Email not found.", "INVALID");
+
+    return fromDbError(error, {
+      action: "updateEmailStatus",
+      extra: { userId: ctx.user.id, emailId: id, status: parsed.data },
+    });
+  }
 
   revalidatePath("/dashboard", "layout");
   return ok(data as EmailGeneration);
@@ -68,7 +95,14 @@ export async function deleteEmail(id: string): Promise<ActionResult> {
   if (!ctx) return unauthorized();
 
   const { error } = await ctx.supabase.from("email_generations").delete().eq("id", id);
-  if (error) return fromDbError(error);
+
+  if (error) {
+    return fromDbError(error, {
+      action: "deleteEmail",
+      extra: { userId: ctx.user.id, emailId: id },
+    });
+  }
+
   revalidatePath("/dashboard", "layout");
   return ok(null);
 }

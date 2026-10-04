@@ -1,7 +1,6 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import * as Sentry from "@sentry/nextjs";
 import { getAuthed } from "@/lib/auth";
 import { templateSchema } from "@/lib/validations/template";
 import { uuidSchema } from "@/lib/validations/email";
@@ -42,10 +41,14 @@ export async function saveTemplate(input: unknown, id?: string): Promise<ActionR
         .select()
         .single();
 
-  
   if (error) {
-    Sentry.captureException(error, { tags: { action: "saveTemplate" }, extra: { userId: user.id, isUpdate: !!id } });
-    return fromDbError(error);
+    // No row matched on update (deleted in another tab, or hidden by RLS): expected, not a bug.
+    if (id && error.code === "PGRST116") return fail("Template not found.", "INVALID");
+
+    return fromDbError(error, {
+      action: id ? "updateTemplate" : "createTemplate",
+      extra: { userId: user.id, templateId: id },
+    });
   }
 
   revalidatePath("/dashboard", "layout");
@@ -58,10 +61,14 @@ export async function deleteTemplate(id: string): Promise<ActionResult> {
   if (!ctx) return unauthorized();
 
   const { error } = await ctx.supabase.from("templates").delete().eq("id", id);
+
   if (error) {
-    Sentry.captureException(error, { tags: { action: "deleteTemplate" }, extra: { templateId: id } });
-    return fromDbError(error);
+    return fromDbError(error, {
+      action: "deleteTemplate",
+      extra: { userId: ctx.user.id, templateId: id },
+    });
   }
+
   revalidatePath("/dashboard", "layout");
   return ok(null);
 }

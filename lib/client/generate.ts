@@ -8,7 +8,7 @@ export type GenerationResponse =
 export async function requestGeneration(input: GeneratorInput): Promise<GenerationResponse> {
   try {
     const res = await fetch("/api/generate", {
-      method: "POST",
+        method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(input),
     });
