@@ -1,10 +1,13 @@
+
 import { CheckCircle2 } from "lucide-react";
 import { ManageBillingButton, UpgradeButton } from "@/components/dashboard/billing-buttons";
 import { PageHeader } from "@/components/dashboard/page-header";
+import { GmailConnection } from "@/components/settings/gmail-connection";
 import { AccountSection, CompanyForm, ProfileForm } from "@/components/settings/settings-forms";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { requireUser } from "@/lib/auth";
+// import { getGmailEmail } from "@/lib/gmail/connection";
 import { getUsage } from "@/lib/usage";
 import { formatDate } from "@/lib/utils";
 import type { Profile } from "@/types";
@@ -33,7 +36,7 @@ function Section({ title, description, children }: { title: string; description:
 export default async function SettingsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ checkout?: string }>;
+  searchParams: Promise<{ checkout?: string; gmail?: string }>;
 }) {
   const sp = await searchParams;
   const { supabase, user } = await requireUser();
@@ -41,6 +44,7 @@ export default async function SettingsPage({
   const [{ data }, usage] = await Promise.all([
     supabase.from("profiles").select("*").eq("id", user.id).maybeSingle(),
     getUsage(supabase, user.id),
+    // getGmailEmail(user.id),
   ]);
   const profile = data as Profile | null;
   const sub = usage.subscription;
@@ -48,7 +52,10 @@ export default async function SettingsPage({
 
   return (
     <>
-      <PageHeader title="Settings" description="Manage your profile, company details and subscription." />
+      <PageHeader
+        title="Settings"
+        description="Manage your profile, company details, email connection and subscription."
+      />
 
       {sp.checkout === "success" && (
         <div
@@ -78,7 +85,11 @@ export default async function SettingsPage({
           />
         </Section>
 
-        <Section title="Subscription" description="Your plan and billing status.">
+        <Section title="Email" description="Connect Gmail to send your generated emails from the app.">
+          <GmailConnection email={""} result={sp.gmail} />
+        </Section>
+
+ <Section title="Subscription" description="Your plan and billing status.">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <dl className="grid gap-x-10 gap-y-3 text-sm sm:grid-cols-3">
               <div>
@@ -135,3 +146,54 @@ export default async function SettingsPage({
     </>
   );
 }
+
+
+  {/* <Section title="Subscription" description="Your plan and billing status.">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <dl className="grid gap-x-10 gap-y-3 text-sm sm:grid-cols-3">
+              <div>
+                <dt className="text-muted-foreground">Current plan</dt>
+                <dd className="mt-1 font-medium">{usage.isPro ? "Pro" : "Free"}</dd>
+              </div>
+              <div>
+                <dt className="text-muted-foreground">Billing status</dt>
+                <dd className="mt-1">
+                  <Badge
+                    className={
+                      sub?.status === "past_due"
+                        ? "border-amber-500/20 bg-amber-500/10 text-amber-300"
+                        : usage.isPro
+                          ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-300"
+                          : "border-zinc-500/20 bg-zinc-500/10 text-zinc-300"
+                    }
+                  >
+                    {STATUS_LABEL[sub?.status ?? "free"]}
+                  </Badge>
+                </dd>
+              </div>
+              {sub?.current_period_end && usage.isPro && (
+                <div>
+                  <dt className="text-muted-foreground">
+                    {sub.cancel_at_period_end ? "Ends on" : "Renews on"}
+                  </dt>
+                  <dd className="mt-1 font-medium">{formatDate(sub.current_period_end)}</dd>
+                </div>
+              )}
+            </dl>
+            {hasBillingAccount ? (
+              <ManageBillingButton />
+            ) : (
+              <UpgradeButton />
+            )}
+          </div>
+          {sub?.status === "past_due" && (
+            <p className="mt-4 text-sm text-amber-300">
+              Your last payment failed, so Pro features are paused. Update your payment method to restore them.
+            </p>
+          )}
+          {sub?.status === "canceled" && hasBillingAccount && (
+            <div className="mt-4">
+              <UpgradeButton size="sm">Resubscribe to Pro</UpgradeButton>
+            </div>
+          )}
+        </Section> */}
