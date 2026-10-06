@@ -54,7 +54,6 @@ export type Template = {
   value_proposition: string
   created_at: string;
 };
-
 export type EmailGeneration = {
   id: string;
   user_id: string;
@@ -80,10 +79,13 @@ export type EmailGeneration = {
   cta: string;
   status: EmailStatus;
   model: string;
+  recipient_email: string | null;
+  sent_at: string | null;
+  gmail_message_id: string | null;
+  gmail_thread_id: string | null;
   created_at: string;
   updated_at: string;
 };
-
 export type UsageSnapshot = {
   isPro: boolean;
   subscription: Subscription | null;

@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { Mail } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-// import { disconnectGmail } from "@/lib/actions/gmail";
+import { disconnectGmail } from "@/lib/actions/gmail";
 
 const RESULTS: Record<string, { type: "success" | "error"; text: string }> = {
   connected: { type: "success", text: "Gmail connected." },
@@ -33,7 +33,7 @@ export function GmailConnection({ email, result }: { email: string | null; resul
   const disconnect = () =>
     startTransition(async () => {
       try {
-        const res ={ok:false,error:""};
+        const res = await disconnectGmail();
         if (!res.ok) return void toast.error(res.error);
         toast.success("Gmail disconnected.");
         router.refresh();

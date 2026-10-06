@@ -6,6 +6,7 @@ import { splitName } from "@/lib/utils";
 import { uuidSchema } from "@/lib/validations/email";
 import { emptyGenerator, type GeneratorInput } from "@/lib/validations/generator";
 import type { EmailGeneration, Lead, Profile, Template } from "@/types";
+import { getGmailEmail } from "@/lib/gmail/connection";
 
 export const metadata = { title: "Generate email" };
 
@@ -23,6 +24,8 @@ export default async function GeneratePage({
   ]);
   const p = profile as Profile | null;
   const templateList = (templates ?? []) as Template[];
+  const gmailEmail = await getGmailEmail(user.id);
+
 
 
   let defaults: GeneratorInput = {
@@ -77,7 +80,7 @@ if (sp.template) {
         title="Generate email"
         description="Describe the prospect and your offer. MailForge writes a subject, opening, body and one call to action."
       />
-      <GeneratorForm defaults={defaults} templates={templateList} />
+      <GeneratorForm defaults={defaults} templates={templateList} gmailEmail={gmailEmail}/>
     </>
   );
 }

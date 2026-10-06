@@ -12,6 +12,7 @@ import { EMAIL_STATUS_STYLES } from "@/lib/constants";
 import { emailToPlainText } from "@/lib/emails";
 import { cn, wordCount } from "@/lib/utils";
 import type { EmailGeneration } from "@/types";
+import { SendEmailDialog } from "./send-email-dialog";
 
 type Draft = Pick<EmailGeneration, "subject" | "opening" | "body" | "cta">;
 const pick = (e: EmailGeneration): Draft => ({
@@ -32,6 +33,7 @@ function Block({ label, children }: { label: string; children: React.ReactNode }
 
 export function EmailCard({
   email,
+  gmailEmail, // NEW
   busy = false,
   onRegenerate,
   onUpdated,
@@ -39,6 +41,7 @@ export function EmailCard({
   className,
 }: {
   email: EmailGeneration;
+  gmailEmail: string | null; // NEW
   busy?: boolean;
   onRegenerate: () => void;
   onUpdated: (email: EmailGeneration) => void;
@@ -50,6 +53,8 @@ export function EmailCard({
   const [copied, setCopied] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [pending, startTransition] = useTransition();
+
+  const sent = email.status === "sent"; // NEW
 
   // Reset local edits whenever a different email (or a fresh regeneration) is shown.
   useEffect(() => {
@@ -71,22 +76,32 @@ export function EmailCard({
     }
   };
 
+  // CHANGED: try/catch so a network failure shows a toast instead of failing silently
   const save = () =>
     startTransition(async () => {
-      const res = await saveEmail(email.id, draft);
-      if (!res.ok) return void toast.error(res.error);
-      onUpdated(res.data);
-      setEditing(false);
-      toast.success("Email saved");
+      try {
+        const res = await saveEmail(email.id, draft);
+        if (!res.ok) return void toast.error(res.error);
+        onUpdated(res.data);
+        setEditing(false);
+        toast.success("Email saved");
+      } catch {
+        toast.error("Couldn't save the email. Check your connection and try again.");
+      }
     });
 
+  // CHANGED: same try/catch
   const remove = () =>
     startTransition(async () => {
-      const res = await deleteEmail(email.id);
-      if (!res.ok) return void toast.error(res.error);
-      setConfirmDelete(false);
-      onDeleted(email.id);
-      toast.success("Email deleted");
+      try {
+        const res = await deleteEmail(email.id);
+        if (!res.ok) return void toast.error(res.error);
+        setConfirmDelete(false);
+        onDeleted(email.id);
+        toast.success("Email deleted");
+      } catch {
+        toast.error("Couldn't delete the email. Check your connection and try again.");
+      }
     });
 
   return (
@@ -174,22 +189,38 @@ export function EmailCard({
             <Button size="sm" variant="outline" onClick={copy}>
               {copied ? <Check /> : <Copy />} {copied ? "Copied" : "Copy"}
             </Button>
-            <Button size="sm" variant="outline" onClick={() => setEditing(true)} disabled={busy}>
-              <Pencil /> Edit
-            </Button>
-            <Button size="sm" variant="outline" onClick={onRegenerate} loading={busy}>
-              {!busy && <RefreshCw />} Regenerate
-            </Button>
-            {email.status === "draft" && (
-              <Button
-                size="sm"
-                onClick={save}
-                loading={pending}
-                disabled={busy}
-              >
-                <Save /> Save
-              </Button>
+
+            {/* CHANGED: editing actions are hidden once the email has been sent */}
+            {!sent && (
+              <>
+                <Button size="sm" variant="outline" onClick={() => setEditing(true)} disabled={busy}>
+                  <Pencil /> Edit
+                </Button>
+                <Button size="sm" variant="outline" onClick={onRegenerate} loading={busy}>
+                  {!busy && <RefreshCw />} Regenerate
+                </Button>
+                {email.status === "draft" && (
+                  <Button size="sm" onClick={save} loading={pending} disabled={busy}>
+                    <Save /> Save
+                  </Button>
+                )}
+
+                {/* NEW: send dialog, prefilled from the generator's recipient field */}
+                <SendEmailDialog
+                  email={email}
+                  gmailEmail={gmailEmail}
+                  defaultTo={email.recipient_email ?? ""}
+                  disabled={busy || pending}
+                  onSent={onUpdated}
+                />
+              </>
             )}
+
+            {/* NEW: confirmation once sent */}
+            {sent && email.recipient_email && (
+              <span className="text-xs text-muted-foreground">Sent to {email.recipient_email}</span>
+            )}
+
             <Button
               size="sm"
               variant="ghost"

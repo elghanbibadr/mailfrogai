@@ -11,7 +11,14 @@ export const websiteField = z
     (v) => v === "" || websiteRegex.test(v),
     "Enter a valid website, like acme.com",
   );
-
+export const recipientEmailField = z
+  .string()
+  .trim()
+  .max(254, "Keep this under 254 characters")
+  .refine(
+    (v) => v === "" || z.string().email().safeParse(v).success,
+    "Enter a valid email address.",
+  );
 export const generatorSchema = z.object({
   firstName: z
     .string()
@@ -24,6 +31,7 @@ export const generatorSchema = z.object({
   website: websiteField,
   yourName: z.string().trim().min(1, "Enter your name").max(80),
   yourCompany: z.string().trim().max(120),
+  recipientEmail: recipientEmailField,  
   offer: z
     .string()
     .trim()
@@ -48,25 +56,25 @@ const isDev = process.env.NODE_ENV !== "production";
  * test run. In production this always resolves to the empty version below —
  * do not remove this check.
  */
-export const emptyGenerator: GeneratorInput = 
-   {
-      firstName: "",
-      lastName: "",
-      jobTitle: "",
-      company: "",
-      website: "",
-      yourName: "",
-      yourCompany: "",
-      offer: "",
-      targetCustomer: "",
-      goal: "Book a meeting",   // was: ""
-      valueProp: "",
-      tone: "Direct",
-      cta: "",
-      context: "",
-      templateId: "",
-      leadId: "",
-    };
+export const emptyGenerator: GeneratorInput = {
+  firstName: "",
+  lastName: "",
+  jobTitle: "",
+  company: "",
+  website: "",
+  yourName: "",
+  yourCompany: "",
+  recipientEmail: "",
+  offer: "",
+  targetCustomer: "",
+  goal: "Book a meeting",
+  valueProp: "",
+  tone: "Direct",
+  cta: "",
+  context: "",
+  templateId: "",
+  leadId: "",
+};
   
 /** Shape the model must return. */
 export const generatedEmailSchema = z.object({

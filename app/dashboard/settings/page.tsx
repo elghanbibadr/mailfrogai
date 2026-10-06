@@ -11,6 +11,7 @@ import { requireUser } from "@/lib/auth";
 import { getUsage } from "@/lib/usage";
 import { formatDate } from "@/lib/utils";
 import type { Profile } from "@/types";
+import { getGmailEmail } from "@/lib/gmail/connection";
 
 export const metadata = { title: "Settings" };
 
@@ -41,10 +42,10 @@ export default async function SettingsPage({
   const sp = await searchParams;
   const { supabase, user } = await requireUser();
 
-  const [{ data }, usage] = await Promise.all([
+  const [{ data }, usage,gmailEmail] = await Promise.all([
     supabase.from("profiles").select("*").eq("id", user.id).maybeSingle(),
     getUsage(supabase, user.id),
-    // getGmailEmail(user.id),
+    getGmailEmail(user.id),
   ]);
   const profile = data as Profile | null;
   const sub = usage.subscription;
@@ -86,7 +87,7 @@ export default async function SettingsPage({
         </Section>
 
         <Section title="Email" description="Connect Gmail to send your generated emails from the app.">
-          <GmailConnection email={""} result={sp.gmail} />
+          <GmailConnection email={gmailEmail} result={sp.gmail} />
         </Section>
 
  <Section title="Subscription" description="Your plan and billing status.">

@@ -33,9 +33,11 @@ function Section({ title, description, children }: { title: string; description?
 export function GeneratorForm({
   defaults,
   templates,
+  gmailEmail,
 }: {
   defaults: GeneratorInput;
   templates: Template[];
+
 }) {
   const router = useRouter();
   const resultRef = useRef<HTMLDivElement>(null);
@@ -43,7 +45,6 @@ export function GeneratorForm({
   const [loading, setLoading] = useState(false);
   const [upgradeReason, setUpgradeReason] = useState<string | null>(null);
 
-  console.log("templates2",templates)
   const {
     register,
     handleSubmit,
@@ -55,6 +56,8 @@ export function GeneratorForm({
 
   const generate = async (values: GeneratorInput) => {
     setLoading(true);
+    console.log("valuyes",values)
+
     const res = await requestGeneration(values);
     setLoading(false);
 
@@ -94,6 +97,23 @@ export function GeneratorForm({
           <Field label="Company website" htmlFor="website" error={errors.website?.message} className="sm:col-span-2">
             <Input id="website" placeholder="northwind.com" {...register("website")} />
           </Field>
+          <Field
+  label="Business email"
+  htmlFor="recipientEmail"
+  className="sm:col-span-2"
+  hint="Optional. Lets you send the email straight from here once it's generated."
+  error={errors.recipientEmail?.message}
+>
+  <Input
+    id="recipientEmail"
+    type="email"
+    inputMode="email"
+    autoComplete="off"
+    placeholder="john@northwind.com"
+    aria-invalid={!!errors.recipientEmail}
+    {...register("recipientEmail")}
+  />
+</Field>
           <Field
             label="Additional context"
             htmlFor="context"
@@ -190,6 +210,8 @@ export function GeneratorForm({
         ) : email ? (
           <EmailCard
             email={email}
+              gmailEmail={gmailEmail}
+
             onRegenerate={handleSubmit(generate, onInvalid)}
             onUpdated={setEmail}
             onDeleted={() => {
