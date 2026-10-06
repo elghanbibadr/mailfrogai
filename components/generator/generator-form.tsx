@@ -37,6 +37,8 @@ export function GeneratorForm({
 }: {
   defaults: GeneratorInput;
   templates: Template[];
+    gmailEmail: string | null;
+
 
 }) {
   const router = useRouter();

@@ -52,6 +52,7 @@ export function SendEmailDialog({
     startTransition(async () => {
       try {
         const res = await sendEmail(email.id, to.trim());
+        console.log("res",res)
         if (!res.ok) {
           if (res.code === "GMAIL_NOT_CONNECTED" || res.code === "GMAIL_DISCONNECTED") {
             setNeedsConnect(true);
