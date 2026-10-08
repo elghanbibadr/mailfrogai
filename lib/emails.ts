@@ -15,6 +15,7 @@ export function emailToInput(email: EmailGeneration): GeneratorInput {
     targetCustomer: email.target_customer,
     goal: email.goal,
     valueProp: email.value_prop,
+recipientEmail: email.recipient_email ?? "",
     tone: email.tone,
     cta: email.cta_preference,
     context: email.context,
