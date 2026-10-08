@@ -199,6 +199,7 @@ export function HistoryList({
               </DialogHeader>
               <EmailCard
                 email={selected}
+                gmailEmail={selected.recipient_email}
                 busy={regenerating}
                 onRegenerate={regenerate}
                 onUpdated={replace}
